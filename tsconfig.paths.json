@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@config": ["config"],
+      "@exception/*": ["src/exception/*"],
+      "@exception": ["src/exception"]
+    }
+  }
+}
