@@ -11,9 +11,32 @@ import {
   FindNotificationDetailDTO,
   FindNotificationListDTO,
 } from "./dto";
+import { RoleName } from "../user/constant/Role";
 
 class NotificationController {
   private notificationService = new NotificationService();
+
+  feature(req: Request, res: Response) {
+     const {role} = req.body;
+     
+     const response = new KakaoBotResponse();
+    
+    response.addQuickReplie({
+      label: "공지 확인하기",
+      action: "block",
+      blockId: BlockName.NOTIFICATION_LIST_CHECK
+    })
+
+    if (role === RoleName.TEACHER) {
+      response.addQuickReplie({
+        label: "공지 등록하기",
+        action: "block",
+        blockId: BlockName.NOTIFICATION_POST
+      })
+    }
+
+     res.status(200).send(response.getData())
+  }
 
   async findNotificationList(req: Request, res: Response) {
     try {

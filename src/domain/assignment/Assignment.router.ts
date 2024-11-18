@@ -8,6 +8,10 @@ import {
 const assignmentRouter = Router();
 const assignmentController = new AssignmentController();
 
+assignmentRouter.post("/", [
+  LoginAuthorization,
+  assignmentController.feature.bind(assignmentController),
+]);
 assignmentRouter.post("/get/list", [
   LoginAuthorization,
   assignmentController.findAssignmentList.bind(assignmentController),

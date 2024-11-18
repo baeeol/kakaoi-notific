@@ -10,7 +10,8 @@ const userRouter = Router();
 const userController = new UserController();
 
 userRouter.post("/login", userController.login.bind(userController));
-userRouter.post("/register", userController.register.bind(userController));
+userRouter.post("/register/student", userController.registerStudent.bind(userController));
+userRouter.post("/register/teacher", userController.registerTeacher.bind(userController));
 userRouter.post("/mypage", [
   LoginAuthorization,
   userController.mypage.bind(userController),

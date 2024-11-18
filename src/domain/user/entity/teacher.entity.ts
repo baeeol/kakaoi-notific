@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { RoleType } from "../constant/Role";
 import { SubjectType } from "src/constant/Subject";
+import Assignment from "src/domain/assignment/entity/Assignment.entity";
 
 @Entity("teacher")
 export default class Teacher {
@@ -16,15 +17,19 @@ export default class Teacher {
   @Column("varchar", { length: 128, nullable: false })
   password: string;
 
-  @Column("varchar", { length: 10, nullable: true })
-  major!: SubjectType;
+  @Column("varchar", { length: 10, nullable: false })
+  major: SubjectType;
 
   @Column("varchar", { length: 1, nullable: false })
   role: RoleType;
 
-  constructor(name: string, password: string, role: RoleType) {
+  @OneToMany(() => Assignment, (assignment) => assignment.teacher)
+  assignment!: Assignment[];
+
+  constructor(name: string, password: string, major: SubjectType, role: RoleType) {
     this.name = name;
     this.password = password;
+    this.major = major;
     this.role = role;
   }
 }

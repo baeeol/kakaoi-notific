@@ -6,26 +6,51 @@ import KakaoBotResponse, {
   Button,
   CustomBoardItemData,
 } from "src/response/KakaoBotResponse";
+import { RoleName } from "../user/constant/Role";
 import { AddAssignmentDTO, FindAssignmentDetailDTO, FindAssignmentListDTO } from "./dto";
 
 class AssignmentController {
   private assignmentService = new AssignmentService();
 
+  feature(req: Request, res: Response) {
+    const {role} = req.body;
+    
+    const response = new KakaoBotResponse();
+   
+   response.addQuickReplie({
+     label: "선생님 공지 확인하기",
+     action: "block",
+     blockId: BlockName.NOTIFICATION_LIST_CHECK
+   })
+
+   if (role === RoleName.TEACHER) {
+     response.addQuickReplie({
+       label: "선생님 공지 등록하기",
+       action: "block",
+       blockId: BlockName.NOTIFICATION_POST
+     })
+   }
+
+    res.status(200).send(response.getData())
+ }
+
   async findAssignmentList(req: Request, res: Response) {
     try {
+      const { botUserKey } = req.body;
       const pageParam = req.body.extraParams.page;
       const page = pageParam ? pageParam : 1;
 
-      const findAssignmentListDTO = new FindAssignmentListDTO(parseInt(page));
+      const findAssignmentListDTO = new FindAssignmentListDTO(botUserKey, parseInt(page));
       const [assignmentList, isEndPage] = await this.assignmentService.findAssignmentList(
         findAssignmentListDTO
       );
 
       const header = `과목별 선생님 공지 (${page}페이지)`;
       const itemDataArray: CustomBoardItemData[] = assignmentList.map((assignment) => {
-        const { id, title } = assignment;
+        const { id, title, teacher } = assignment;
         return {
-          title: `${id}. ${title}`,
+          title: `{${id}} ${title}`,
+          description: `${teacher.name} (${teacher.major})`,
           params: {
             assignmentId: id,
             page,
@@ -57,7 +82,7 @@ class AssignmentController {
         findAssignmentDetailDTO
       );
 
-      const { title, article, subject, imageUrlArray } = assignmentDetail;
+      const { title, article, teacher, imageUrlArray } = assignmentDetail;
       const textCardButtonArray: Button[] = [
         {
           label: "돌아가기",
@@ -68,7 +93,7 @@ class AssignmentController {
       ];
 
       const response = new KakaoBotResponse();
-      response.addTextCardOutput(title, article, textCardButtonArray);
+      response.addTextCardOutput(title, `작성자 : ${teacher.name} (${teacher.major})\n\n${article}`, textCardButtonArray);
       imageUrlArray?.forEach((imageUrl) => {
         response.addSimpleImageOutput(
           imageUrl,
@@ -83,15 +108,16 @@ class AssignmentController {
 
   async addAssignment(req: Request, res: Response) {
     try {
-      const { title, article, subject, image } = req.body.params;
+      const { botUserKey } = req.body;
+      const { title, article, image } = req.body.params;
       const imageUrlArray: string[] | null = image
         ? KakaoRequestUtil.getSecureImageUrlArray(image)
         : null;
 
       const addAssignmentDTO = new AddAssignmentDTO(
+        botUserKey,
         title,
         article,
-        subject,
         imageUrlArray
       );
       await this.assignmentService.addAssignment(addAssignmentDTO);

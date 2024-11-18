@@ -3,7 +3,8 @@ import ServiceException from "@exception/Service.exception";
 import { RoleName } from "./constant/Role";
 import {
   LoginDTO,
-  RegisterDTO,
+  RegisterStudentDTO,
+  RegisterTeacherDTO,
   InfoDTO,
   UpdateCourseDTO,
   FindCourseListDTO,
@@ -68,25 +69,27 @@ class UserService {
     }
   }
 
-  async register(registerDTO: RegisterDTO) {
+  async registerStudent(registerStudentDTO: RegisterStudentDTO) {
     try {
-      const { role, id, password } = registerDTO;
-
+      const { studentId, password } = registerStudentDTO;
       const salt = bcrypt.genSaltSync();
       const digest = bcrypt.hashSync(password, salt);
 
-      // 사용자 회원가입
-      switch (role) {
-        case RoleName.STUDENT:
-          const student = new Student(id, digest, RoleName.STUDENT);
-          await this.userRepository.createStudent(student);
-          break;
+      const student = new Student(studentId, digest, RoleName.STUDENT);
+      await this.userRepository.createStudent(student);
+    } catch (e) {
+      throw e;
+    }
+  }
 
-        case RoleName.TEACHER:
-          const teacher = new Teacher(id, digest, RoleName.TEACHER);
-          await this.userRepository.createTeacher(teacher);
-          break;
-      }
+  async registerTeacher(registerTeacherDTO: RegisterTeacherDTO) {
+    try {
+      const { name, password, major } = registerTeacherDTO;
+      const salt = bcrypt.genSaltSync();
+      const digest = bcrypt.hashSync(password, salt);
+
+      const teacher = new Teacher(name, digest, major, RoleName.STUDENT);
+      await this.userRepository.createTeacher(teacher);
     } catch (e) {
       throw e;
     }

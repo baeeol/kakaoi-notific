@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Teacher } from "src/domain/user/entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("assignment")
 export default class Assignment {
@@ -11,16 +12,16 @@ export default class Assignment {
   @Column("varchar", { length: 400, nullable: false })
   article: string;
 
-  @Column("varchar", { length: 10, nullable: false })
-  subject: string;
+  @ManyToOne(() => Teacher, (teacher) => teacher.assignment)
+  teacher: Teacher;
 
   @Column("varchar", { length: 40, nullable: true, unique: true })
   image_dir: string | null;
 
-  constructor(title: string, article: string, subject: string, image_dir: string | null) {
+  constructor(title: string, article: string, teacher: Teacher, image_dir: string | null) {
     this.title = title;
     this.article = article;
-    this.subject = subject;
+    this.teacher = teacher
     this.image_dir = image_dir;
   }
 }

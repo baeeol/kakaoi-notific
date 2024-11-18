@@ -10,7 +10,8 @@ import {
   FindCourseListDTO,
   InfoDTO,
   LoginDTO,
-  RegisterDTO,
+  RegisterStudentDTO,
+  RegisterTeacherDTO,
   UpdateCourseDTO,
 } from "./dto";
 import ServiceException from "@exception/Service.exception";
@@ -62,12 +63,25 @@ class UserController {
     }
   }
 
-  async register(req: Request, res: Response) {
+  async registerStudent(req: Request, res: Response) {
     try {
-      const { role, id, password } = req.body;
+      const { studentId, password } = req.body;
 
-      const registerDTO = new RegisterDTO(role, id, password);
-      await this.userService.register(registerDTO);
+      const registerStudentDTO = new RegisterStudentDTO(studentId, password);
+      await this.userService.registerStudent(registerStudentDTO);
+
+      res.status(200).send();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async registerTeacher(req: Request, res: Response) {
+    try {
+      const { name, password, major } = req.body;
+
+      const registerTeacherDTO = new RegisterTeacherDTO(name, password, major);
+      await this.userService.registerTeacher(registerTeacherDTO);
 
       res.status(200).send();
     } catch (e) {

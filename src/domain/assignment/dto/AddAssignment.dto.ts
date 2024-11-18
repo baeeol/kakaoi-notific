@@ -1,18 +1,18 @@
 class AddAssignmentDTO {
+  botUserKey: string;
   title: string;
   article: string;
-  subject: string;
   imageUrlArray: string[] | null;
 
   constructor(
+    botUserKey: string,
     title: string,
     article: string,
-    subject: string,
     imageUrlArray: string[] | null
   ) {
+    this.botUserKey = botUserKey;
     this.title = title;
     this.article = article;
-    this.subject = subject;
     this.imageUrlArray = imageUrlArray;
   }
 }

@@ -8,6 +8,7 @@ import {
 const notificationRouter = Router();
 const notificationController = new NotificationController();
 
+notificationRouter.post("/", [LoginAuthorization, notificationController.feature.bind(notificationController)])
 notificationRouter.post("/get/list", [
   LoginAuthorization,
   notificationController.findNotificationList.bind(notificationController),
